@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+group = 'com.webrtc'
 
 android {
     namespace "com.sdk.lib_webrtc"
@@ -44,61 +45,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'androidx.appcompat:appcompat:1.6.1'
-}
-
-publishing {
-    publications {
-        // 使用 MavenPublication 类型创建 MavenPublication 对象
-        register("maven", MavenPublication) {
-            // 配置 Maven 发布的基本信息
-            it.groupId = "net.armcloud.armcloudrtc"
-            it.artifactId = "webrtc5776"
-            it.version = "1.2.3"
-            it.artifact(file("build/outputs/aar/libwebrtc5776-release.aar"))
-
-            // 添加所有依赖项
-            pom.withXml {
-                def dependenciesNode = asNode().appendNode("dependencies")
-
-                def addDependencies = { String configurationName ->
-                    def dependencies = configurations.findByName(configurationName)
-                    dependencies?.dependencies?.each { dependency ->
-                        if (dependency.group != null && dependency.version != null) {
-                            def dependencyNode = dependenciesNode.appendNode("dependency")
-                            dependencyNode.appendNode("groupId", dependency.group)
-                            dependencyNode.appendNode("artifactId", dependency.name)
-                            dependencyNode.appendNode("version", dependency.version)
-                            dependencyNode.appendNode("scope", dependencies.name)
-                        }
-                    }
-                }
-                addDependencies("implementation")
-                addDependencies("compile")
-                addDependencies("api")
-                addDependencies("debugImplementation")
-                addDependencies("releaseImplementation")
-            }
-
-            versionMapping {
-                usage("java-api") {
-                    fromResolutionOf("runtimeClasspath")
-                }
-                usage("java-runtime") {
-                    fromResolutionResult()
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            url = uri("https://maven1.vmos.cn/artifactory/libs-release-armcloud/")
-            credentials {
-                username = "heguangming"
-                password = "WUUpy9gXf2"
-            }
-        }
-    }
 }
 
 
