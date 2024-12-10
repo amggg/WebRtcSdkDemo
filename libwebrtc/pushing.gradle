@@ -1,0 +1,32 @@
+apply plugin: 'maven-publish'
+
+// 配置项目信息
+def group = 'com.xiaosuan.armcloudsdk'
+def version = '1.0.0'
+
+// 配置发布到的Maven仓库地址
+publishing {
+    publications {
+        // 定义发布的AAR包
+        maven(MavenPublication) {
+            // 从Android Library发布
+            from components.androidLibrary
+            // 配置发布的groupId、artifactId和版本号
+            groupId = group
+            artifactId = 'webrtc'
+            version = '1.0.0'
+        }
+    }
+    repositories {
+        maven {
+            // 这里填写你的Maven仓库地址
+            url = uri('http://47.92.147.147:8081/repository/maven-snapshots/')
+            // 如果需要验证登录，可以在这里配置凭据
+            credentials {
+                username = "admin"
+                password = "vmos-cloud-admin123"
+            }
+            setAllowInsecureProtocol(true)
+        }
+    }
+}
