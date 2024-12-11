@@ -10,7 +10,7 @@ import androidx.annotation.IntRange;
 /**
  * @author admin
  */
-public class CustomScreenCaptureAndroid extends ScreenCapturerAndroid implements Runnable, SurfaceTexture.OnFrameAvailableListener {
+public class ScreenCaptureAndroidOpt extends ScreenCapturerAndroid implements Runnable, SurfaceTexture.OnFrameAvailableListener {
 
     private int delayTime = 0;
 
@@ -25,7 +25,7 @@ public class CustomScreenCaptureAndroid extends ScreenCapturerAndroid implements
      * @param mediaProjectionCallback             MediaProjection callback to implement application specific
      *                                            logic in events such as when the user revokes a previously granted capture permission.
      **/
-    public CustomScreenCaptureAndroid(Intent mediaProjectionPermissionResultData, MediaProjection.Callback mediaProjectionCallback) {
+    public ScreenCaptureAndroidOpt(Intent mediaProjectionPermissionResultData, MediaProjection.Callback mediaProjectionCallback) {
         super(mediaProjectionPermissionResultData, mediaProjectionCallback);
     }
 

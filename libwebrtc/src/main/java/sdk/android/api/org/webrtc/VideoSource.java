@@ -43,8 +43,6 @@ public class VideoSource extends MediaSource {
     @Nullable
     private VideoProcessor videoProcessor;
     private boolean isCaptureRunning;
-    private boolean isRest = true;
-    private final FixedSizeQueue<Long> fixedSizeQueue = new FixedSizeQueue<Long>(5);
 
     private final CapturerObserver capturerObserver = new CapturerObserver() {
         @Override
@@ -82,43 +80,13 @@ public class VideoSource extends MediaSource {
             if (parameters == null) {
                 return;
             }
-            isRest = fixedSizeQueue.areAllElementsEqual();
-            fixedSizeQueue.add(frame.getTimestampNs());
-            VideoFrame adaptedFrame = null;
-            if (isAtLeastAndroid13() && !isLimitSendFrame) {
-                // 自定义限制逻辑
-                if (frame.getTimestampNs() != lastSendTime) {
-                    VideoFrame.Buffer buffer = frame.getBuffer().cropAndScale(0
-                            , 0
-                            , frame.getBuffer().getWidth()
-                            , frame.getBuffer().getHeight()
-                            , frame.getBuffer().getWidth(), frame.getBuffer().getHeight());
-                    adaptedFrame = new VideoFrame(buffer, frame.getRotation(), System.nanoTime());
-                    lastSendTime = frame.getTimestampNs();
-                } else {
-                    if (System.currentTimeMillis() - lastLimitSendTime > LIMIT_SEND_TIME) {
-                        VideoFrame.Buffer buffer = frame.getBuffer().cropAndScale(0
-                                , 0
-                                , frame.getBuffer().getWidth()
-                                , frame.getBuffer().getHeight()
-                                , frame.getBuffer().getWidth(), frame.getBuffer().getHeight());
-                        adaptedFrame = new VideoFrame(buffer, frame.getRotation(), System.nanoTime());
-                        lastLimitSendTime = System.currentTimeMillis();
-                    }
-                }
-            } else {
-                adaptedFrame = VideoProcessor.applyFrameAdaptationParameters(frame, parameters);
-            }
+            VideoFrame adaptedFrame = VideoProcessor.applyFrameAdaptationParameters(frame, parameters);
             if (adaptedFrame != null) {
                 nativeAndroidVideoTrackSource.onFrameCaptured(adaptedFrame);
                 adaptedFrame.release();
             }
         }
     };
-
-    public boolean isRest() {
-        return isRest;
-    }
 
     public void isLimitSendFrame(Boolean isLimit) {
         isLimitSendFrame = isLimit;
